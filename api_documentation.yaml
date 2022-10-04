@@ -6,9 +6,11 @@ info:
   version: '1.0'
   description: ''
 servers:
-  - url: 'http://127.0.0.7/api/v1/'
+  - url: 'http://127.0.0.7/'
+  - description: ''
+    url: 'http://127.0.0.7/auth/'
 paths:
-  rooms/:
+  api/v1/rooms/:
     parameters: []
     get:
       summary: Get User Info by User ID
@@ -34,8 +36,17 @@ paths:
                       place_quantity: 3
                       free: false
           headers: {}
-        '404':
-          description: User Not Found
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
         '':
           description: ''
       operationId: get-users-userId
@@ -114,61 +125,7 @@ paths:
                     place_quantity: 2
                     free: true
       description: Создание комнаты
-  /user:
-    post:
-      summary: Create New User
-      operationId: post-user
-      responses:
-        '200':
-          description: User Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-              examples:
-                New User Bob Fellow:
-                  value:
-                    id: 12
-                    firstName: Bob
-                    lastName: Fellow
-                    email: bob.fellow@gmail.com
-                    dateOfBirth: '1996-08-24'
-                    emailVerified: false
-                    createDate: '2020-11-18'
-        '400':
-          description: Missing Required Information
-        '409':
-          description: Email Already Taken
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                lastName:
-                  type: string
-                email:
-                  type: string
-                dateOfBirth:
-                  type: string
-                  format: date
-              required:
-                - firstName
-                - lastName
-                - email
-                - dateOfBirth
-            examples:
-              Create User Bob Fellow:
-                value:
-                  firstName: Bob
-                  lastName: Fellow
-                  email: bob.fellow@gmail.com
-                  dateOfBirth: '1996-08-24'
-        description: Post the necessary fields for the API to create a new user.
-      description: Create a new user.
-  /rooms/<id>/:
+  api/v1/rooms/<id>/:
     get:
       summary: Your GET endpoint
       tags: []
@@ -199,6 +156,17 @@ paths:
                 Not Found:
                   value:
                     detail: Not found.
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
       operationId: get-rooms-id
       description: Комната по id
       parameters: []
@@ -222,7 +190,8 @@ paths:
                     place_quantity: 2
                     free: true
       description: Изменения параметров комнаты
-  /rooms/my_reserves/:
+    parameters: []
+  api/v1/rooms/my_reserves/:
     get:
       summary: Your GET endpoint
       tags: []
@@ -242,12 +211,21 @@ paths:
                       date: '2022-10-05'
                     - number: 4
                       date: '2022-10-07'
-        '404':
-          description: Not Found
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
       operationId: get-dsdsds
       description: Получение своего списка броней
     parameters: []
-  /rooms/<id>/reserve/:
+  api/v1/rooms/<id>/reserve/:
     parameters: []
     post:
       summary: ''
@@ -287,6 +265,17 @@ paths:
                 Not Found:
                   value:
                     errors: Данной комнаты не существует
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
       description: Забронировать комнату
     delete:
       summary: ''
@@ -303,7 +292,7 @@ paths:
                 No Content:
                   value:
                     ok: Бронь данной комнаты успешно удалена
-  /rooms/free_rooms/:
+  api/v1/rooms/free_rooms/:
     get:
       summary: Your GET endpoint
       tags: []
@@ -333,49 +322,171 @@ paths:
                       cost: 10000
                       place_quantity: 2
                       free: true
-        '404':
-          description: Not Found
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
       operationId: get-rooms-free_rooms
+    parameters: []
+  auth/users/:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    - email: admin@mail.ru
+                      id: 1
+                      username: admin
+                    - email: ''
+                      id: 2
+                      username: user1
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
+      operationId: get-auth-users
+      description: Информация о пользователях
+    parameters: []
+  auth/jwt/refresh/:
+    parameters: []
+    post:
+      summary: ''
+      operationId: postauth-jwt-refresh
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    access: '{new_access_token}'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Bad Request:
+                  value:
+                    refresh:
+                      - This field is required.
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
+  auth/users/me:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    email: admin@mail.ru
+                    id: 1
+                    username: admin
+        '405':
+          description: Method Not Allowed
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
+      operationId: get-auth
+      description: Информация о текущем пользователе
+    parameters: []
+  auth/jwt/create:
+    parameters: []
+    post:
+      summary: ''
+      operationId: postauth-jwt-create
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    refresh: '{refresh_token}'
+                    access: '{access_token}'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Bad Request:
+                  value:
+                    username:
+                      - This field is required.
+                    password:
+                      - This field is required.
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Method Not Allowed:
+                  value:
+                    detail: 'Method "{method}" not allowed.'
+      description: Получение токена аутентификации
 components:
-  schemas:
-    User:
-      title: User
-      type: object
-      description: ''
-      examples:
-        - id: 142
-          firstName: Alice
-          lastName: Smith
-          email: alice.smith@gmail.com
-          dateOfBirth: '1997-10-31'
-          emailVerified: true
-          signUpDate: '2019-08-24'
-      properties:
-        id:
-          type: integer
-          description: Unique identifier for the given user.
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-          format: email
-        dateOfBirth:
-          type: string
-          format: date
-          example: '1997-10-31'
-        emailVerified:
-          type: boolean
-          description: Set to true if the user's email has been verified.
-        createDate:
-          type: string
-          format: date
-          description: The date that the user was created.
-      required:
-        - id
-        - firstName
-        - lastName
-        - email
-        - emailVerified
+  schemas: {}
   securitySchemes: {}
