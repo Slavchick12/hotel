@@ -16,7 +16,7 @@ class Room(models.Model):
     )
     place_quantity = models.SmallIntegerField(
         'Количество мест',
-        default=0,
+        default=1,
         help_text='Количество мест'
     )
     free = models.BooleanField(default=True)

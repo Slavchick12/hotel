@@ -96,8 +96,8 @@ class RoomViewSet(viewsets.ModelViewSet):
                 {'errors': CANNOT_DELETE_NOT_YOUR_RESERVE},
                 status.HTTP_404_NOT_FOUND
             )
-        reserve.delete()
         Room.objects.filter(id=pk).update(free=True)
+        reserve.delete()
         return Response(
             {'ok': RESERVE_DELETED_OK},
             status.HTTP_204_NO_CONTENT

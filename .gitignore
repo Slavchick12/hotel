@@ -111,5 +111,3 @@ venv.bak/
 static/
 
 db.sqlite3
-
-api.yaml

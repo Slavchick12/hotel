@@ -89,7 +89,7 @@ http://127.0.0.1:8000/admin
 ```
 ## Используемый стек
 ```
-Django, DRF, PostgreSQL, Simple-JWT
+Python, Django, DRF, PostgreSQL, Simple-JWT
 ```
 #### Также используется
 ```

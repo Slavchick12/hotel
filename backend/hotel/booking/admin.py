@@ -32,5 +32,4 @@ class ReserveAdmin(admin.ModelAdmin):
 
     @receiver(post_delete)
     def signal_function_name(sender, instance, using, **kwargs):
-        room = instance.room
-        Room.objects.filter(id=room.id).update(free=True)
+        Room.objects.filter(id=instance.id).update(free=True)
