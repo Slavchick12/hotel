@@ -1,0 +1,381 @@
+openapi: 3.1.0
+x-stoplight:
+  id: leigxcangcfhv
+info:
+  title: booking
+  version: '1.0'
+  description: ''
+servers:
+  - url: 'http://127.0.0.7/api/v1/'
+paths:
+  rooms/:
+    parameters: []
+    get:
+      summary: Get User Info by User ID
+      tags: []
+      responses:
+        '200':
+          description: Список комнат
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Get rooms:
+                  value:
+                    - id: 6
+                      number: 7
+                      cost: 3233
+                      place_quantity: 2
+                      free: true
+                    - id: 5
+                      number: 3
+                      cost: 5663
+                      place_quantity: 3
+                      free: false
+          headers: {}
+        '404':
+          description: User Not Found
+        '':
+          description: ''
+      operationId: get-users-userId
+      description: Получение списка комнат
+      parameters: []
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+    post:
+      summary: ''
+      operationId: postrooms
+      responses:
+        '201':
+          description: Created
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Created:
+                  value:
+                    id: 11
+                    number: 98
+                    cost: 10000
+                    place_quantity: 2
+                    free: true
+      description: Создание комнаты
+  /user:
+    post:
+      summary: Create New User
+      operationId: post-user
+      responses:
+        '200':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                New User Bob Fellow:
+                  value:
+                    id: 12
+                    firstName: Bob
+                    lastName: Fellow
+                    email: bob.fellow@gmail.com
+                    dateOfBirth: '1996-08-24'
+                    emailVerified: false
+                    createDate: '2020-11-18'
+        '400':
+          description: Missing Required Information
+        '409':
+          description: Email Already Taken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+              required:
+                - firstName
+                - lastName
+                - email
+                - dateOfBirth
+            examples:
+              Create User Bob Fellow:
+                value:
+                  firstName: Bob
+                  lastName: Fellow
+                  email: bob.fellow@gmail.com
+                  dateOfBirth: '1996-08-24'
+        description: Post the necessary fields for the API to create a new user.
+      description: Create a new user.
+  /rooms/<id>/:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    id: 6
+                    number: 7
+                    cost: 323
+                    place_quantity: 3
+                    free: false
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Not Found:
+                  value:
+                    detail: Not found.
+      operationId: get-rooms-id
+      description: Комната по id
+      parameters: []
+    put:
+      summary: ''
+      operationId: put-rooms-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    id: 11
+                    number: 928
+                    cost: 10000
+                    place_quantity: 2
+                    free: true
+      description: Изменения параметров комнаты
+  /rooms/my_reserves/:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    - number: 3
+                      date: '2022-10-05'
+                    - number: 4
+                      date: '2022-10-07'
+        '404':
+          description: Not Found
+      operationId: get-dsdsds
+      description: Получение своего списка броней
+    parameters: []
+  /rooms/<id>/reserve/:
+    parameters: []
+    post:
+      summary: ''
+      operationId: post-rooms-id-reserve
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Created:
+                  value:
+                    number: 3
+                    date: '2022-10-05'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Bad Request:
+                  value:
+                    errors: Данная комната уже забронирована
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Not Found:
+                  value:
+                    errors: Данной комнаты не существует
+      description: Забронировать комнату
+    delete:
+      summary: ''
+      operationId: delete-rooms-id-reserve
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                No Content:
+                  value:
+                    ok: Бронь данной комнаты успешно удалена
+  /rooms/free_rooms/:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                OK:
+                  value:
+                    - id: 9
+                      number: 33
+                      cost: 323
+                      place_quantity: 3
+                      free: true
+                    - id: 10
+                      number: 10
+                      cost: 0
+                      place_quantity: 0
+                      free: true
+                    - id: 11
+                      number: 928
+                      cost: 10000
+                      place_quantity: 2
+                      free: true
+        '404':
+          description: Not Found
+      operationId: get-rooms-free_rooms
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+  securitySchemes: {}
