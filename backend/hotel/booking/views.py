@@ -105,7 +105,6 @@ class RoomViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=['POST'],
         permission_classes=[AllowAny]
     )
     def free_rooms(self, request):
