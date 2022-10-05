@@ -111,3 +111,5 @@ venv.bak/
 static/
 
 db.sqlite3
+
+.vscode/
