@@ -29,12 +29,11 @@ paths:
                       number: 7
                       cost: 3233
                       place_quantity: 2
-                      free: true
+
                     - id: 5
                       number: 3
                       cost: 5663
                       place_quantity: 3
-                      free: false
           headers: {}
         '405':
           description: Method Not Allowed
@@ -123,7 +122,6 @@ paths:
                     number: 98
                     cost: 10000
                     place_quantity: 2
-                    free: true
       description: Создание комнаты
   api/v1/rooms/<id>/:
     get:
@@ -144,7 +142,6 @@ paths:
                     number: 7
                     cost: 323
                     place_quantity: 3
-                    free: false
         '404':
           description: Not Found
           content:
@@ -188,7 +185,6 @@ paths:
                     number: 928
                     cost: 10000
                     place_quantity: 2
-                    free: true
       description: Изменения параметров комнаты
     parameters: []
   api/v1/rooms/my_reserves/:
@@ -311,17 +307,14 @@ paths:
                       number: 33
                       cost: 323
                       place_quantity: 3
-                      free: true
                     - id: 10
                       number: 10
                       cost: 0
                       place_quantity: 0
-                      free: true
                     - id: 11
                       number: 928
                       cost: 10000
                       place_quantity: 2
-                      free: true
         '405':
           description: Method Not Allowed
           content:

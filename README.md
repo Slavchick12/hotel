@@ -71,9 +71,24 @@ cd <path_to_project>/hotel/backend/hotel/
 ##### Шаг 3. Проведите миграции
 ```bash
 python manage.py makemigrations
-```
-```bash
 python manage.py migrate
+```
+#### Подготовка секретных переменных
+##### Шаг 1. Перейдите в директорию с файлом __settings.py__
+```bash
+cd <path_to_project>/hotel/backend/hotel/hotel/
+```
+##### Шаг 2. Создайте файл __.env_
+##### Шаг 3. Заполните __.env__ следующем образом
+```
+DB_ENGINE=django.db.backends.postgresql_psycopg2
+DB_NAME=<DB_NAME>
+POSTGRES_USER=<POSTGRES_USER>
+POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+DB_HOST=127.0.0.1
+DB_PORT=5432
+SECRET_KEY=<SECRET_KEY>
+DEBUG=True
 ```
 #### Запуск проекта на локальной машине
 ```bash

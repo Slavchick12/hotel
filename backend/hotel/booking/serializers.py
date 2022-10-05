@@ -6,13 +6,7 @@ from .models import Reserve, Room
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = (
-            'id',
-            'number',
-            'cost',
-            'place_quantity',
-            'free'
-        )
+        fields = ('id', 'number', 'cost', 'place_quantity')
 
 
 class ReserveSerializer(serializers.ModelSerializer):
@@ -20,7 +14,4 @@ class ReserveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reserve
-        fields = (
-            'number',
-            'date'
-        )
+        fields = ('number', 'date')
