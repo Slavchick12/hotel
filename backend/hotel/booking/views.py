@@ -12,6 +12,10 @@ from .serializers import ReserveSerializer, RoomSerializer
 
 class RoomViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnlyPermission]
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.OrderingFilter
+    )
     filterset_fields = ('cost', 'place_quantity')
     ordering_fields = ('cost', 'place_quantity')
     ordering = ('cost',)
@@ -19,21 +23,8 @@ class RoomViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Room.objects.all()
 
-    def filter_queryset(self, queryset):
-        filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-        for backend in list(filter_backends):
-            queryset = backend().filter_queryset(self.request, queryset, view=self)
-        return queryset
-
     def get_serializer_class(self):
         return RoomSerializer
-
-    @action(detail=False, permission_classes=[IsAuthenticated])
-    def my_reserves(self, request):
-        queryset = Reserve.objects.filter(user=request.user)
-        context = {'request': request}
-        serializer = ReserveSerializer(queryset, context=context, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
     def reserve(self, request, pk):
@@ -53,13 +44,25 @@ class RoomViewSet(viewsets.ModelViewSet):
         else:
             reserve = get_object_or_404(Reserve, user=request.user, room=room)
         reserve.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, permission_classes=[AllowAny])
     def free_rooms(self, request):
-        print(request.POST)
         reserved = Reserve.objects.all()
         queryset = self.get_queryset().exclude(room__in=reserved)
         context = {'request': request}
         serializer = self.get_serializer(queryset, context=context, many=True)
         return Response(serializer.data, status.HTTP_204_NO_CONTENT)
+
+
+class ReserveViewSet(viewsets.ModelViewSet):
+    queryset = Reserve.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_superuser:
+            return queryset
+        return queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        return ReserveSerializer
