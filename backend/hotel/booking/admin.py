@@ -11,5 +11,5 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Reserve)
 class ReserveAdmin(admin.ModelAdmin):
-    list_display = ('room', 'date')
-    search_fields = ('room', 'date')
+    list_display = ('room', 'start_date', 'end_date')
+    search_fields = ('room', 'start_date', 'end_date')

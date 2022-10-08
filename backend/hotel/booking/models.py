@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import User
 
 
@@ -15,7 +16,8 @@ class Room(models.Model):
 class Reserve(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reserved_user')
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room', verbose_name='комната')
-    date = models.DateField('дата',)
+    start_date = models.DateField('Дата, ОТ',)
+    end_date = models.DateField('Дата, ДО')
 
     class Meta:
         verbose_name = 'бронь'

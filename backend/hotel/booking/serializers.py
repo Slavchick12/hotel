@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from rest_framework.response import Response
+
 from .models import Reserve, Room
-from rest_framework import status
-RESERVE_EXIST = 'Бронь на данную комнату уже существует'
+
+RESERVE_EXIST = 'Бронь на данную дату уже существует'
+ROOM_NOT_EXIST = 'Данной комнаты не существует'
+DATE_END_ERROR = 'Дата окончания брони не может быть раньше старта брони'
+DATE_EQUALLY = 'Забронировать можно минимум на один день'
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -16,19 +19,32 @@ class ReserveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reserve
-        fields = ('number', 'date')
+        fields = ('id', 'number', 'start_date', 'end_date')
 
     def validate(self, data):
-        id = data['room']['number']
-        room = Room.objects.get(pk=id)
-        if Reserve.objects.filter(room=room).exists():
+        start_date = data['start_date']
+        end_date = data['end_date']
+        if end_date < start_date:
+            raise serializers.ValidationError(DATE_END_ERROR)
+        if end_date == start_date:
+            raise serializers.ValidationError(DATE_EQUALLY)
+        number = data['room']['number']
+        try:
+            room = Room.objects.get(number=number)
+        except Exception:
+            raise serializers.ValidationError(ROOM_NOT_EXIST)
+        if (Reserve.objects.filter(room=room, start_date__lte=start_date, end_date__gte=end_date).exists()
+           or Reserve.objects.filter(room=room, start_date__gte=start_date, start_date__lt=end_date).exists()
+           or Reserve.objects.filter(room=room, end_date__lte=start_date, end_date__gte=end_date).exists()):
             raise serializers.ValidationError(RESERVE_EXIST)
         return super().validate(data)
 
-    def create(self, request, validated_data):
-        print(request.user)
-        user = request.user
-        room = validated_data.pop('room')
-        date = validated_data.pop('date')
-        Reserve.objects.create(user=user, room=room, date=date)
-        return validated_data
+    def create(self, validated_data):
+        user = validated_data['user']
+        number = validated_data['room']['number']
+        room = Room.objects.get(number=number)
+        start_date = validated_data['start_date']
+        end_date = validated_data['end_date']
+        reserve = Reserve(user=user, room=room, start_date=start_date, end_date=end_date)
+        reserve.save()
+        return reserve

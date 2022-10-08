@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -26,32 +25,19 @@ class RoomViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         return RoomSerializer
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
-    def reserve(self, request, pk):
-        room = get_object_or_404(Room, id=pk)
-        if Reserve.objects.filter(room=room).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        reserve = Reserve.objects.create(user=request.user, room=room, date=request.data['date'])
-        context = {'request': request}
-        serializer = ReserveSerializer(reserve, context=context)
-        return Response(serializer.data, status.HTTP_201_CREATED)
-
-    @reserve.mapping.delete
-    def delete_reserve(self, request, pk):
-        room = get_object_or_404(Room, id=pk)
-        if request.user.is_superuser:
-            reserve = get_object_or_404(Reserve, room=room)
-        else:
-            reserve = get_object_or_404(Reserve, user=request.user, room=room)
-        reserve.delete()
-
     @action(detail=False, permission_classes=[AllowAny])
     def free_rooms(self, request):
-        reserved = Reserve.objects.all()
-        queryset = self.get_queryset().exclude(room__in=reserved)
+        start_date = request.data['start_date']
+        end_date = request.data['end_date']
+        result = (
+            Reserve.objects.filter(start_date__lte=start_date, end_date__gte=end_date) |
+            Reserve.objects.filter(start_date__gte=start_date, start_date__lt=end_date) |
+            Reserve.objects.filter(end_date__lte=start_date, end_date__gte=end_date)
+        )
+        queryset = self.get_queryset().exclude(room__in=result)
         context = {'request': request}
         serializer = self.get_serializer(queryset, context=context, many=True)
-        return Response(serializer.data, status.HTTP_204_NO_CONTENT)
+        return Response(serializer.data, status.HTTP_200_OK)
 
 
 class ReserveViewSet(viewsets.ModelViewSet):
@@ -66,3 +52,6 @@ class ReserveViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         return ReserveSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
