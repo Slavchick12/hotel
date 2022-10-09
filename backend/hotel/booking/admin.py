@@ -11,5 +11,10 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Reserve)
 class ReserveAdmin(admin.ModelAdmin):
-    list_display = ('room', 'start_date', 'end_date')
-    search_fields = ('room', 'start_date', 'end_date')
+    list_display = ('room_number', 'start_date', 'end_date')
+    search_fields = ('room_number', 'start_date', 'end_date')
+
+    def room_number(self, obj):
+        return obj.room.number
+
+    room_number.short_description = 'номер комнаты'
