@@ -1,15 +1,15 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
+from rest_framework import filters, viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Reserve, Room
 from .permisions import IsAdminOrReadOnlyPermission
 from .serializers import ReserveSerializer, RoomSerializer
+from .utils import free_rooms
 
 
 class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all()
     permission_classes = [IsAdminOrReadOnlyPermission]
     filter_backends = (
         DjangoFilterBackend,
@@ -20,24 +20,16 @@ class RoomViewSet(viewsets.ModelViewSet):
     ordering = ('cost',)
 
     def get_queryset(self):
-        return Room.objects.all()
+        queryset = super().get_queryset()
+        get_params = self.request.GET
+        if get_params:
+            start_date = get_params.get('start_date')
+            end_date = get_params.get('end_date')
+            return free_rooms(start_date, end_date)
+        return queryset
 
     def get_serializer_class(self):
         return RoomSerializer
-
-    @action(detail=False, permission_classes=[AllowAny])
-    def free_rooms(self, request):
-        start_date = request.data['start_date']
-        end_date = request.data['end_date']
-        result = (
-            Reserve.objects.filter(start_date__lte=start_date, end_date__gte=end_date) |
-            Reserve.objects.filter(start_date__gte=start_date, start_date__lt=end_date) |
-            Reserve.objects.filter(end_date__lte=start_date, end_date__gte=end_date)
-        )
-        queryset = self.get_queryset().exclude(room__in=result)
-        context = {'request': request}
-        serializer = self.get_serializer(queryset, context=context, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
 
 
 class ReserveViewSet(viewsets.ModelViewSet):
