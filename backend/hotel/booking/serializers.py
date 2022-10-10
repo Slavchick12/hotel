@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Reserve, Room
 
-RESERVE_EXIST = 'Бронь на данную дату уже существует'
+RESERVE_EXIST = 'Бронь на дату в промежутке уже существует'
 ROOM_NOT_EXIST = 'Данной комнаты не существует'
 DATE_END_ERROR = 'Дата окончания брони не может быть раньше старта брони'
 DATE_EQUALLY = 'Забронировать можно минимум на один день'

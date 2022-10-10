@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Reserve, Room
 from .permisions import IsAdminOrReadOnlyPermission
 from .serializers import ReserveSerializer, RoomSerializer
-from .utils import free_rooms
+from .utils import date_format_test, free_rooms
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -22,9 +22,10 @@ class RoomViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         get_params = self.request.GET
-        if get_params:
-            start_date = get_params.get('start_date')
-            end_date = get_params.get('end_date')
+        start_date = get_params.get('start_date')
+        end_date = get_params.get('end_date')
+        if (start_date is not None and end_date is not None and date_format_test(start_date)
+           and date_format_test(end_date)):
             return free_rooms(start_date, end_date)
         return queryset
 
